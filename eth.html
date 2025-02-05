@@ -2,9 +2,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="EtherExplorer search box to fetch Ethereum transaction details">
+    <meta name="description" content="EtherExplorer to fetch Ethereum transaction details.">
     <meta name="keywords" content="EtherExplorer, Ethereum, Transaction, Details, API">
-    <meta name="author" content="Your Name">
+    <meta name="author" content="Yash">
     <title>EtherExplorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
@@ -82,18 +82,18 @@
                 <div class="mb-4 flex items-center justify-between">
                     <div class="flex items-center">
                         <i class="fas fa-quote-left text-pink-500 mr-2"></i>
-                        <span class="text-pink-500 text-sm font-semibold">Transaction Details:</span>
+                        <span class="text-pink-500 text-sm font-semibold">Transaction Details :</span>
                     </div>
                 </div>
                 <div class="text-sm">
-                    <p><strong>Transaction Hash:</strong> <span class="mono block">${txHash.slice(0, 40)}<br>${txHash.slice(40)}</span></p>
-                    <p><strong>From:</strong> <span class="mono">${fromAddress}</span></p>
-                    <p><strong>To:</strong> <span class="mono block">${toAddress}</span></p>
-                    <p><strong>Value:</strong> <span class="mono">${valueEth}</span> ETH (~ $${valueUsd} USDT)</p>
-                    <p><strong>Gas Limit:</strong> <span class="mono">${gas}</span></p>
-                    <p><strong>Gas Price:</strong> <span class="mono">${gasPriceGwei}</span> Gwei</p>
-                    <p><strong>Block Number:</strong> <span class="mono">${blockNumber}</span></p>
-                    <p><strong>Timestamp (UTC):</strong> <span class="mono">${txTime}</span></p>
+                    <p><strong>Transaction Hash :</strong> <span class="mono block">${txHash.slice(0, 40)}<br>${txHash.slice(40)}</span></p>
+                    <p><strong>From :</strong> <span class="mono">${fromAddress}</span></p>
+                    <p><strong>To :</strong> <span class="mono block">${toAddress}</span></p>
+                    <p><strong>Value :</strong> <span class="mono">${valueEth}</span> ETH ($${valueUsd} USD)</p>
+                    <p><strong>Gas Limit :</strong> <span class="mono">${gas}</span></p>
+                    <p><strong>Gas Price :</strong> <span class="mono">${gasPriceGwei}</span> Gwei</p>
+                    <p><strong>Block Number :</strong> <span class="mono">${blockNumber}</span></p>
+                    <p><strong>Timestamp (UTC) :</strong> <span class="mono">${txTime}</span></p>
                 </div>
                 <div class="mt-4 mb-4 flex items-center">
                     <span class="${txStatusColor} text-lg font-semibold ml-2">${txStatus}</span>
