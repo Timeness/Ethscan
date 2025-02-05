@@ -1,0 +1,133 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="EtherExplorer search box to fetch Ethereum transaction details">
+    <meta name="keywords" content="EtherExplorer, Ethereum, Transaction, Details, API">
+    <meta name="author" content="Your Name">
+    <title>EtherExplorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600&display=swap&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Signika', sans-serif;
+        }
+        .mono {
+            font-family: 'Space Mono', monospace;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        async function fetchTransactionDetails(txHash) {
+            const API_KEY = "QHTC1CRQUJF743SHY1UDZ82HTJGS74ENB4";
+            const txDetailsUrl = `https://api.etherscan.io/api?module=proxy&action=eth_getTransactionByHash&txhash=${txHash}&apikey=${API_KEY}`;
+            const txResponse = await fetch(txDetailsUrl);
+            const txData = await txResponse.json();
+            const txResult = txData.result;
+
+            if (!txResult) {
+                alert("Transaction not found or invalid hash.");
+                return;
+            }
+
+            const fromAddress = txResult.from;
+            const toAddress = txResult.to;
+            const valueWei = parseInt(txResult.value, 16);
+            const valueEth = valueWei / 1e18;
+            const gas = parseInt(txResult.gas, 16);
+            const gasPriceWei = parseInt(txResult.gasPrice, 16);
+            const gasPriceGwei = gasPriceWei / 1e9;
+            const blockNumberHex = txResult.blockNumber;
+            const blockNumber = parseInt(blockNumberHex, 16);
+
+            const receiptUrl = `https://api.etherscan.io/api?module=transaction&action=gettxreceiptstatus&txhash=${txHash}&apikey=${API_KEY}`;
+            const receiptResponse = await fetch(receiptUrl);
+            const receiptData = await receiptResponse.json();
+            const receiptResult = receiptData.result;
+            const status = receiptResult.status;
+            let txStatus = "";
+            let txStatusColor = "";
+
+            if (status === "1") {
+                txStatus = "Success";
+                txStatusColor = "text-green-500";
+            } else if (status === "0") {
+                txStatus = "Failed";
+                txStatusColor = "text-red-500";
+            } else {
+                txStatus = "Pending";
+                txStatusColor = "text-yellow-500";
+            }
+
+            const blockUrl = `https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=${blockNumberHex}&boolean=true&apikey=${API_KEY}`;
+            const blockResponse = await fetch(blockUrl);
+            const blockData = await blockResponse.json();
+            const blockResult = blockData.result;
+            const timestampHex = blockResult.timestamp;
+            const timestamp = parseInt(timestampHex, 16);
+            const txTime = new Date(timestamp * 1000).toISOString().replace('T', ' ').replace('Z', '');
+
+            const ethPriceUrl = 'https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT';
+            const ethPriceResponse = await fetch(ethPriceUrl);
+            const ethPriceData = await ethPriceResponse.json();
+            const ethPrice = parseFloat(ethPriceData.price);
+            const valueUsd = (valueEth * ethPrice).toFixed(2);
+
+            const details = `
+                <div class="mb-4 flex items-center">
+                    <i class="fas fa-quote-left text-pink-500 mr-2"></i>
+                    <span class="text-pink-500 text-sm font-semibold">Transaction Details:</span>
+                </div>
+                <div class="text-sm">
+                    <p><strong>Transaction Hash:</strong> <span class="mono block">${txHash.slice(0, 40)}<br>${txHash.slice(40)}</span></p>
+                    <p><strong>From:</strong> <span class="mono">${fromAddress}</span></p>
+                    <p><strong>To:</strong> <span class="mono block">${toAddress}</span></p>
+                    <p><strong>Value:</strong> <span class="mono">${valueEth}</span> ETH (~ $${valueUsd} USDT)</p>
+                    <p><strong>Gas Limit:</strong> <span class="mono">${gas}</span></p>
+                    <p><strong>Gas Price:</strong> <span class="mono">${gasPriceGwei}</span> Gwei</p>
+                    <p><strong>Block Number:</strong> <span class="mono">${blockNumber}</span></p>
+                    <p><strong>Timestamp (UTC):</strong> <span class="mono">${txTime}</span></p>
+                </div>
+                <div class="mt-4 mb-4 flex items-center">
+                    <span class="${txStatusColor} text-lg font-semibold ml-2">${txStatus}</span>
+                    <i class="fas fa-quote-right text-pink-500 ml-2"></i>
+                </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <a href="https://etherscan.io/tx/${txHash}" target="_blank" class="bg-gray-700 text-white px-4 py-2 rounded-full flex items-center">
+                        <i class="fas fa-search mr-2"></i> View on Etherscan
+                    </a>
+                </div>
+            `;
+
+            document.getElementById('transactionDetails').innerHTML = details;
+            document.getElementById('searchSection').style.display = 'none';
+        }
+
+        function handleSearch() {
+            const txHash = document.getElementById('txHash').value;
+            if (txHash) {
+                fetchTransactionDetails(txHash);
+                window.history.pushState({}, '', `?Txhash=${txHash}`);
+            }
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const txHash = urlParams.get('Txhash');
+            if (txHash) {
+                fetchTransactionDetails(txHash);
+            }
+        }
+    </script>
+</head>
+<body class="bg-black text-white">
+    <div class="max-w-md mx-auto mt-10 p-4 rounded-lg shadow-lg">
+        <div id="searchSection" class="mb-4">
+            <input type="text" id="txHash" class="w-full p-2 rounded-lg bg-gray-700 text-white" placeholder="Enter Transaction Hash">
+            <button onclick="handleSearch()" class="bg-pink-500 text-white px-4 py-2 rounded-full mt-2">Scan</button>
+        </div>
+        <div id="transactionDetails"></div>
+    </div>
+</body>
+</html>
