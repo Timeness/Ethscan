@@ -152,7 +152,7 @@
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/ethereum');
                 const data = await response.json();
 
-                document.getElementById('eth-logo').src = data.image.large;
+              //  document.getElementById('eth-logo').src = data.image.large;
                 const currentPrice = data.market_data.current_price.usd.toFixed(2);
                 document.getElementById('price').textContent = `$${Number(currentPrice).toLocaleString()}`;
 
